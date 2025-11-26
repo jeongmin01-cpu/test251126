@@ -3,303 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>구구단 산성비 게임</title>
+    <title>2025 대구미래역량교육 퀴즈</title>
     <style>
-        /* 스타일 (디자인) 영역 */
         body {
-            margin: 0;
-            overflow: hidden; /* 스크롤 방지 */
-            background-color: #000; /* 검은 배경 */
-            color: #0f0; /* 녹색 글씨 */
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            background-color: #f0f2f5;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
         }
-
-        #header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 20px;
-            box-sizing: border-box;
-            font-size: 20px;
-            border-bottom: 2px solid #0f0;
-            background-color: #111;
-            z-index: 10;
-        }
-
-        #game-area {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .problem {
-            position: absolute;
-            font-size: 24px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 0 0 5px #0f0;
-        }
-
-        #input-area {
-            width: 100%;
-            padding: 20px;
-            background-color: #111;
-            display: flex;
-            justify-content: center;
-            border-top: 2px solid #0f0;
-            z-index: 10;
-        }
-
-        #answer-input {
-            width: 300px;
-            padding: 10px;
-            font-size: 24px;
+        .container {
+            background-color: white;
+            width: 90%;
+            max-width: 500px;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             text-align: center;
-            background-color: #000;
-            color: #0f0;
-            border: 2px solid #0f0;
-            outline: none;
         }
-
-        /* 게임 오버 및 시작 화면 */
-        #overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+        h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        .quiz-box {
+            min-height: 150px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 20;
         }
-
-        button {
-            padding: 15px 30px;
-            font-size: 24px;
-            cursor: pointer;
-            background-color: #0f0;
-            color: #000;
-            border: none;
+        #question {
+            font-size: 20px;
             font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            word-break: keep-all;
+        }
+        #answer-box {
             margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 10px;
+            color: #2e7d32;
+            font-weight: bold;
+            display: none; /* 처음에 숨김 */
         }
-        
-        button:hover {
-            background-color: #fff;
+        .btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            transition: 0.2s;
         }
-
-        h1 { margin: 0 0 20px 0; font-size: 40px; text-shadow: 2px 2px #fff; }
-        .red { color: red !important; text-shadow: 0 0 5px red; }
+        #btn-action {
+            background-color: #007bff;
+            color: white;
+        }
+        #btn-action:hover {
+            background-color: #0056b3;
+        }
+        #btn-answer {
+            background-color: #ff9800;
+            color: white;
+            display: none; /* 처음에 숨김 */
+        }
+        #btn-answer:hover {
+            background-color: #f57c00;
+        }
+        .emoji {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <!-- 상단 정보창 -->
-    <div id="header">
-        <div>점수: <span id="score">0</span></div>
-        <div>생명: <span id="lives">❤️❤️❤️❤️❤️</span></div>
-    </div>
+    <div class="container">
+        <div class="emoji">🎓</div>
+        <h1>2025 대구미래역량교육<br>실전 퀴즈</h1>
+        
+        <div class="quiz-box">
+            <div id="question">아래 버튼을 눌러<br>문제를 시작해보세요!</div>
+            
+            <button id="btn-answer" class="btn" onclick="showAnswer()">정답 확인하기 👀</button>
+            <div id="answer-box"></div>
+        </div>
 
-    <!-- 게임 화면 (문제가 떨어지는 곳) -->
-    <div id="game-area"></div>
-
-    <!-- 시작/게임오버 화면 -->
-    <div id="overlay">
-        <h1>구구단 산성비</h1>
-        <p>내려오는 구구단의 정답을 입력하세요!</p>
-        <button onclick="startGame()">게임 시작</button>
-    </div>
-
-    <!-- 하단 입력창 -->
-    <div id="input-area">
-        <input type="number" id="answer-input" placeholder="정답 입력 후 엔터" disabled>
+        <button id="btn-action" class="btn" onclick="nextQuestion()">문제 풀기 🚀</button>
     </div>
 
     <script>
-        // 자바스크립트 (게임 로직) 영역
-        const gameArea = document.getElementById('game-area');
-        const inputField = document.getElementById('answer-input');
-        const scoreDisplay = document.getElementById('score');
-        const livesDisplay = document.getElementById('lives');
-        const overlay = document.getElementById('overlay');
-        
-        let score = 0;
-        let lives = 5;
-        let isPlaying = false;
-        let problems = []; // 현재 화면에 있는 문제들 저장
-        let gameLoop; // 게임 루프 타이머
-        let spawnTimer; // 문제 생성 타이머
-        let dropSpeed = 2; // 떨어지는 속도 (레벨업시 증가)
-        let spawnRate = 2000; // 문제 생성 간격 (ms)
-
-        // 게임 시작 함수
-        function startGame() {
-            // 초기화
-            score = 0;
-            lives = 5;
-            dropSpeed = 2;
-            spawnRate = 2000;
-            problems = [];
-            gameArea.innerHTML = ''; // 화면 비우기
-            updateUI();
-            
-            isPlaying = true;
-            overlay.style.display = 'none';
-            inputField.disabled = false;
-            inputField.value = '';
-            inputField.focus();
-
-            // 루프 시작
-            clearInterval(gameLoop);
-            clearInterval(spawnTimer);
-            
-            gameLoop = setInterval(updateGame, 30); // 30ms마다 화면 갱신 (움직임)
-            spawnTimer = setInterval(createProblem, spawnRate); // 일정 시간마다 문제 생성
-        }
-
-        // 문제 생성 함수
-        function createProblem() {
-            if (!isPlaying) return;
-
-            const a = Math.floor(Math.random() * 8) + 2; // 2~9단
-            const b = Math.floor(Math.random() * 9) + 1; // 1~9
-            
-            const problem = document.createElement('div');
-            problem.classList.add('problem');
-            problem.innerText = `${a} x ${b}`;
-            
-            // 랜덤 위치 (화면 너비 내에서)
-            const randomX = Math.floor(Math.random() * (window.innerWidth - 100));
-            problem.style.left = randomX + 'px';
-            problem.style.top = '-50px'; // 화면 위쪽에서 시작
-
-            gameArea.appendChild(problem);
-
-            // 데이터 저장
-            problems.push({
-                el: problem,
-                y: -50,
-                answer: a * b
-            });
-        }
-
-        // 게임 업데이트 (매 프레임마다 실행)
-        function updateGame() {
-            if (!isPlaying) return;
-
-            // 모든 문제를 아래로 이동
-            for (let i = 0; i < problems.length; i++) {
-                let p = problems[i];
-                p.y += dropSpeed;
-                p.el.style.top = p.y + 'px';
-
-                // 바닥에 닿았는지 확인 (게임 오버 조건)
-                if (p.y > gameArea.clientHeight - 30) {
-                    removeProblem(i);
-                    loseLife();
-                    i--; // 리스트에서 빠졌으므로 인덱스 조정
-                }
+        // PDF에서 추출한 퀴즈 데이터
+        const quizData = [
+            {
+                q: "2025 대구미래역량교육의 비전 슬로건은?\n'미래를 배운다 ( 　 ) 성장한다'",
+                a: "함께"
+            },
+            {
+                q: "수업 시간에 관련된 책을 읽고 토론하고 글을 쓰는 활동인 '수품책'은 무엇의 줄임말인가요?",
+                a: "수업 품은 책 읽기"
+            },
+            {
+                q: "탐구 중심 수업과 논·서술형 평가를 특징으로 하는 국제 인증 교육 프로그램의 이름은? (영문 2글자)",
+                a: "IB (International Baccalaureate)"
+            },
+            {
+                q: "2025년부터 초1~2학년 희망 학생 누구나 무료로 2시간 맞춤형 프로그램을 이용할 수 있는 정책은?",
+                a: "늘봄학교"
+            },
+            {
+                q: "대구미래역량교육이 추구하는 4대 역량은 공감소통, 창의융합적사고, 공동체역량, 그리고 무엇일까요?",
+                a: "자기관리 역량"
+            },
+            {
+                q: "서부교육지원청의 역점 추진 과제는 서구의 '날뫼북춤' 등 지역 특색을 살린 ( 　　 ) 교육이다.",
+                a: "전통문화예술"
+            },
+            {
+                q: "대구미래역량교육의 3가지 인간상은 성찰/배려하는 사람, 생각/질문하는 사람, 그리고 ( 　　 )하는 사람이다.",
+                a: "도전"
             }
-        }
+        ];
 
-        // 정답 입력 처리
-        inputField.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                checkAnswer();
-            }
-        });
+        let currentQuiz = null;
 
-        function checkAnswer() {
-            const userAnswer = parseInt(inputField.value);
-            let correct = false;
+        function nextQuestion() {
+            // 1. 랜덤으로 문제 하나 뽑기
+            const randomIndex = Math.floor(Math.random() * quizData.length);
+            currentQuiz = quizData[randomIndex];
 
-            // 화면에 있는 문제들 중 정답이 있는지 확인
-            for (let i = 0; i < problems.length; i++) {
-                if (problems[i].answer === userAnswer) {
-                    // 정답 맞춤!
-                    const target = problems[i];
-                    
-                    // 시각적 효과 (반짝임) 후 삭제
-                    target.el.style.color = 'yellow';
-                    target.el.style.textShadow = '0 0 10px yellow';
-                    
-                    // 즉시 삭제 (화면에서는 살짝 딜레이를 줄 수도 있지만 깔끔하게 즉시 삭제)
-                    gameArea.removeChild(target.el);
-                    problems.splice(i, 1);
-                    
-                    correct = true;
-                    score += 10;
-                    
-                    // 레벨업 로직 (100점마다 속도 증가)
-                    if (score % 100 === 0) {
-                        dropSpeed += 0.5;
-                        // 생성 속도도 빨라짐
-                        clearInterval(spawnTimer);
-                        spawnRate = Math.max(500, spawnRate - 200);
-                        spawnTimer = setInterval(createProblem, spawnRate);
-                    }
-                    
-                    break; // 한 번에 하나씩만 제거 (중복 정답 시 가장 아래 것 부터)
-                }
-            }
-
-            if (correct) {
-                updateUI();
-            } else {
-                // 틀렸을 때 입력창 흔들기 효과 (간단히 빨간색으로)
-                inputField.style.backgroundColor = '#300';
-                setTimeout(() => inputField.style.backgroundColor = '#000', 100);
-            }
+            // 2. 화면 업데이트
+            document.getElementById('question').innerText = "Q. " + currentQuiz.q;
             
-            inputField.value = ''; // 입력창 비우기
+            // 3. 정답 영역 숨기고 초기화
+            document.getElementById('answer-box').style.display = 'none';
+            document.getElementById('answer-box').innerText = currentQuiz.a;
+
+            // 4. 버튼 상태 변경
+            document.getElementById('btn-answer').style.display = 'block'; // 정답 보기 버튼 보이기
+            document.getElementById('btn-action').innerText = '다음 문제 풀기 ➡️';
         }
 
-        function removeProblem(index) {
-            const p = problems[index];
-            gameArea.removeChild(p.el);
-            problems.splice(index, 1);
-        }
-
-        function loseLife() {
-            lives--;
-            updateUI();
-            
-            // 화면 깜빡임 효과
-            document.body.style.backgroundColor = '#300';
-            setTimeout(() => document.body.style.backgroundColor = '#000', 100);
-
-            if (lives <= 0) {
-                gameOver();
-            }
-        }
-
-        function updateUI() {
-            scoreDisplay.innerText = score;
-            let heartString = "";
-            for(let i=0; i<lives; i++) heartString += "❤️";
-            livesDisplay.innerText = heartString;
-        }
-
-        function gameOver() {
-            isPlaying = false;
-            clearInterval(gameLoop);
-            clearInterval(spawnTimer);
-            inputField.disabled = true;
-            
-            overlay.innerHTML = `
-                <h1 class="red">GAME OVER</h1>
-                <p>최종 점수: ${score}점</p>
-                <button onclick="startGame()">다시 하기</button>
-            `;
-            overlay.style.display = 'flex';
+        function showAnswer() {
+            // 정답 박스 보여주기
+            document.getElementById('answer-box').style.display = 'block';
         }
     </script>
 </body>
